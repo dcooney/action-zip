@@ -32,7 +32,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "run-s lint build add"
+      "pre-commit": "run-s build add"
     }
   }
 }

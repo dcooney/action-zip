@@ -3,8 +3,10 @@ const path = require("path");
 const AdmZip = require("adm-zip");
 const core = require("@actions/core");
 
-const files = core.getInput("files");
+const files = core.getInput("files") === '/';
 const dest = core.getInput("dest");
+const ignore = core.getInput("ignore");
+const ignoreFiles = ignore ? ignore.split(" ") : "";
 const recursive = core.getInput("recursive") === "true";
 
 console.log(`Ready to zip "${files}" into ${dest}`);
@@ -23,11 +25,15 @@ files.split(" ").forEach(fileName => {
   const stats = fs.lstatSync(filePath);
 
   if (stats.isDirectory()) {
-    const zipDir = dir === "." ? fileName : dir;
-    zip.addLocalFolder(filePath, !recursive && zipDir);
+    if (!ignoreFiles.includes(fileName)) {
+      const zipDir = dir === "." ? fileName : dir;
+      zip.addLocalFolder(filePath, !recursive && zipDir);
+    }
   } else {
-    const zipDir = dir === "." ? "" : dir;
-    zip.addLocalFile(filePath, !recursive && zipDir);
+    if (!ignoreFiles.includes(fileName)) {
+      const zipDir = dir === "." ? "" : dir;
+      zip.addLocalFile(filePath, !recursive && zipDir);
+    }
   }
 
   console.log(`  - ${fileName}`);
